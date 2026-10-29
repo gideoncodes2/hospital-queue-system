@@ -1,0 +1,14 @@
+{% extends "clinic/base.html" %}
+{% block title %}Create account{% endblock %}
+{% block content %}
+<h1>Create your account</h1>
+<form method="post" class="form-narrow">
+  {% csrf_token %}
+  {% include "clinic/_field.html" with field=form.full_name %}
+  {% include "clinic/_field.html" with field=form.phone %}
+  {% include "clinic/_field.html" with field=form.password1 %}
+  {% include "clinic/_field.html" with field=form.password2 %}
+  <button class="btn" type="submit">Create account</button>
+</form>
+<p class="muted" style="margin-top:1rem">Already registered? <a href="{% url 'login' %}">Log in</a>.</p>
+{% endblock %}

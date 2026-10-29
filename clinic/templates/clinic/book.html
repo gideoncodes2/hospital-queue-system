@@ -1,0 +1,45 @@
+{% extends "clinic/base.html" %}
+{% block title %}Book an appointment{% endblock %}
+{% block content %}
+<h1>Book an appointment</h1>
+<form method="get" class="card">
+  <div class="row">
+    <div>
+      <label for="doctor">Doctor</label>
+      <select id="doctor" name="doctor" required>
+        <option value="">Choose a doctor</option>
+        {% regroup doctors by department as groups %}
+        {% for group in groups %}
+          <optgroup label="{{ group.grouper }}">
+            {% for d in group.list %}<option value="{{ d.pk }}" {% if doctor and doctor.pk == d.pk %}selected{% endif %}>Dr {{ d.name }}</option>{% endfor %}
+          </optgroup>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="date">Date</label>
+      <input id="date" type="date" name="date" value="{{ day|date:'Y-m-d' }}" min="{{ today|date:'Y-m-d' }}" required>
+    </div>
+    <div><button class="btn" type="submit">Show available times</button></div>
+  </div>
+</form>
+
+{% if doctor %}
+  <section class="card">
+    <h2>Dr {{ doctor.name }}, {{ day|date:"l j F" }}</h2>
+    {% if slots %}
+      <p class="muted">Select a time to book it. You will get a queue number by text.</p>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="doctor" value="{{ doctor.pk }}">
+        <input type="hidden" name="date" value="{{ day|date:'Y-m-d' }}">
+        <div class="slots">
+          {% for s in slots %}<button type="submit" name="slot" value="{{ s|time:'H:i' }}">{{ s|time:"H:i" }}</button>{% endfor %}
+        </div>
+      </form>
+    {% else %}
+      <p>No times are free on this day. Try another date.</p>
+    {% endif %}
+  </section>
+{% endif %}
+{% endblock %}

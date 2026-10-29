@@ -1,0 +1,110 @@
+{% extends "clinic/base.html" %}
+{% block title %}Queue dashboard{% endblock %}
+{% block content %}
+{% if not doctor %}
+  <h1>Queue dashboard</h1>
+  <p>No doctors are set up yet. Add a department and doctor in the <a href="{% url 'admin:index' %}">admin</a>.</p>
+{% else %}
+  <div class="row" style="margin-bottom:1rem">
+    <div>
+      <h1>Dr {{ doctor.name }}</h1>
+      <p class="muted" style="margin:0">{{ doctor.department }}. Today's queue.</p>
+    </div>
+    {% if doctors|length > 1 %}
+      <form method="get">
+        <label for="doctor">Switch doctor</label>
+        <select id="doctor" name="doctor" onchange="this.form.submit()">
+          {% for d in doctors %}<option value="{{ d.pk }}" {% if d.pk == doctor.pk %}selected{% endif %}>Dr {{ d.name }} ({{ d.department }})</option>{% endfor %}
+        </select>
+      </form>
+    {% endif %}
+    <div><div class="stat">{{ avg_minutes }} min</div><div class="muted small">average consultation. Used for every wait estimate.</div></div>
+  </div>
+
+  {% if current %}
+    <section class="card now-card">
+      <h2>With the doctor: {{ current.ticket }} {{ current.patient.full_name }}</h2>
+      <p>Started {{ current.consult_start|time:"H:i" }}, {{ current_minutes }} min so far.</p>
+      <form method="post" action="{% url 'appt_action' current.pk 'finish' %}">{% csrf_token %}
+        <button class="btn" type="submit">Finish consultation</button>
+      </form>
+    </section>
+  {% endif %}
+
+  <section class="card">
+    <h2>Waiting ({{ waiting|length }})</h2>
+    {% if waiting %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ticket</th><th>Patient</th><th>Slot</th><th>Estimated wait</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+          {% for a in waiting %}
+            <tr>
+              <td><strong>{{ a.ticket }}</strong></td>
+              <td>{{ a.patient.full_name }}<div class="muted small">{{ a.patient.phone }}</div></td>
+              <td>{% if a.is_walk_in %}Walk-in{% else %}{{ a.slot_time|time:"H:i" }}{% endif %}</td>
+              <td>{% if a.live.wait_minutes == 0 %}Next{% else %}{{ a.live.wait_minutes }} min{% endif %}</td>
+              <td><span class="badge {% if a.status == 'checked_in' %}waiting{% endif %}">{{ a.get_status_display }}</span></td>
+              <td>
+                <div class="actions">
+                  {% if a.status == "booked" %}
+                    <form method="post" action="{% url 'appt_action' a.pk 'check_in' %}">{% csrf_token %}<button class="btn quiet small" type="submit">Check in</button></form>
+                  {% endif %}
+                  <form method="post" action="{% url 'appt_action' a.pk 'start' %}">{% csrf_token %}<button class="btn small" type="submit">Start consultation</button></form>
+                  <form method="post" action="{% url 'appt_action' a.pk 'no_show' %}">{% csrf_token %}<button class="btn danger small" type="submit">No-show</button></form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="muted">Nobody is waiting. Walk-ins can be added below.</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>Add a walk-in</h2>
+    <form method="post" action="{% url 'walk_in' %}">
+      {% csrf_token %}
+      <input type="hidden" name="doctor" value="{{ doctor.pk }}">
+      <div class="row">
+        <div><label for="wi-name">Patient name</label><input id="wi-name" name="full_name" required></div>
+        <div><label for="wi-phone">Phone number</label><input id="wi-phone" name="phone" inputmode="tel" required></div>
+        <div><button class="btn" type="submit">Issue queue number</button></div>
+      </div>
+    </form>
+  </section>
+
+  {% if finished %}
+    <section class="card">
+      <h2>Finished today ({{ finished|length }})</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ticket</th><th>Patient</th><th>Outcome</th><th>Consultation</th></tr></thead>
+          <tbody>
+          {% for a in finished %}
+            <tr>
+              <td>{{ a.ticket }}</td><td>{{ a.patient.full_name }}</td>
+              <td><span class="badge done">{{ a.get_status_display }}</span></td>
+              <td>{% if a.consult_minutes %}{{ a.consult_minutes|floatformat:0 }} min{% else %}-{% endif %}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Refresh the live queue unless staff are typing in a form.
+  setInterval(function () {
+    var el = document.activeElement;
+    if (!el || !/INPUT|SELECT|TEXTAREA/.test(el.tagName)) { location.reload(); }
+  }, 30000);
+</script>
+{% endblock %}

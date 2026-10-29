@@ -1,0 +1,149 @@
+:root {
+  --ink: #12333a;
+  --muted: #55696d;
+  --paper: #f5f8f7;
+  --surface: #ffffff;
+  --line: #d5dfdd;
+  --accent: #0b6e63;
+  --accent-ink: #ffffff;
+  --go: #19764a;
+  --go-bg: #e3f3ea;
+  --warn: #9a4a07;
+  --warn-bg: #fdeed8;
+  --bad: #a3262a;
+  --bad-bg: #fbe4e4;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e6efee;
+    --muted: #9fb3b5;
+    --paper: #0f1e21;
+    --surface: #162a2e;
+    --line: #2b4247;
+    --accent: #3cb8a6;
+    --accent-ink: #072320;
+    --go: #6fd49b;
+    --go-bg: #173a29;
+    --warn: #f0b36b;
+    --warn-bg: #3d2a12;
+    --bad: #f19a9c;
+    --bad-bg: #3f1b1c;
+  }
+}
+* { box-sizing: border-box; }
+html { font-size: 17px; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+a { color: var(--accent); }
+h1, h2, h3 { line-height: 1.2; margin: 0 0 .5rem; }
+h1 { font-size: 1.9rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.05rem; }
+p { margin: 0 0 1rem; max-width: 62ch; }
+.muted { color: var(--muted); }
+.small { font-size: .88rem; }
+
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.site-header .inner {
+  max-width: 62rem; margin: 0 auto; padding: .8rem 1.25rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+}
+.brand { font-weight: 700; font-size: 1.1rem; color: var(--ink); text-decoration: none; }
+.nav { display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
+.nav a { color: var(--ink); text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+.nav form { margin: 0; }
+main { max-width: 62rem; margin: 0 auto; padding: 1.75rem 1.25rem 4rem; }
+
+.btn {
+  display: inline-block; font: inherit; font-weight: 700; cursor: pointer;
+  padding: .6rem 1.1rem; border-radius: 8px; border: 2px solid var(--accent);
+  background: var(--accent); color: var(--accent-ink); text-decoration: none;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.quiet { background: transparent; color: var(--accent); }
+.btn.danger { background: transparent; border-color: var(--bad); color: var(--bad); }
+.btn.small { padding: .3rem .7rem; font-size: .88rem; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.messages { list-style: none; padding: 0; margin: 0 0 1.25rem; display: grid; gap: .5rem; }
+.messages li { padding: .7rem 1rem; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); }
+.messages .success { background: var(--go-bg); border-color: var(--go); }
+.messages .error { background: var(--bad-bg); border-color: var(--bad); }
+
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1.1rem 1.25rem; margin-bottom: 1rem;
+}
+.stack > * + * { margin-top: 1rem; }
+.row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: end; }
+.row > * { flex: 1 1 12rem; }
+
+label { display: block; font-weight: 700; margin-bottom: .25rem; }
+input, select {
+  width: 100%; font: inherit; color: var(--ink); background: var(--surface);
+  padding: .55rem .7rem; border: 2px solid var(--line); border-radius: 8px;
+}
+input:focus, select:focus { border-color: var(--accent); }
+.field { margin-bottom: 1rem; max-width: 26rem; }
+.field .help { color: var(--muted); font-size: .88rem; margin-top: .2rem; }
+.errorlist { list-style: none; padding: 0; margin: .25rem 0 0; color: var(--bad); font-size: .92rem; }
+.form-narrow { max-width: 26rem; }
+
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.2rem, 1fr)); gap: .5rem; margin-top: .75rem; }
+.slots button {
+  font: inherit; font-weight: 700; padding: .55rem 0; border-radius: 8px; cursor: pointer;
+  background: var(--surface); color: var(--accent); border: 2px solid var(--accent);
+}
+.slots button:hover { background: var(--accent); color: var(--accent-ink); }
+
+/* The queue ticket: the one distinctive element. A stub with the number, a perforated edge, then the details. */
+.ticket {
+  display: grid; grid-template-columns: auto 1fr; background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 1rem; overflow: hidden;
+}
+.ticket .stub {
+  padding: 1.1rem 1.4rem; background: var(--accent); color: var(--accent-ink);
+  display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 8rem;
+  border-right: 3px dotted var(--surface);
+}
+.ticket .stub .num { font-size: 2.2rem; font-weight: 700; letter-spacing: .02em; line-height: 1; }
+.ticket .stub .label { font-size: .85rem; margin-top: .3rem; }
+.ticket .body { padding: 1rem 1.25rem; }
+.ticket .wait { font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
+.ticket .wait.now { color: var(--go); }
+.ticket .meta { color: var(--muted); font-size: .92rem; margin-bottom: .6rem; }
+@media (max-width: 34rem) {
+  .ticket { grid-template-columns: 1fr; }
+  .ticket .stub { flex-direction: row; gap: .8rem; border-right: 0; border-bottom: 3px dotted var(--surface); }
+}
+
+.badge { display: inline-block; padding: .1rem .55rem; border-radius: 99px; font-size: .85rem; font-weight: 700;
+  background: var(--line); color: var(--ink); }
+.badge.waiting { background: var(--warn-bg); color: var(--warn); }
+.badge.with { background: var(--go-bg); color: var(--go); }
+.badge.done { background: var(--line); color: var(--muted); }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { font-size: .9rem; color: var(--muted); font-weight: 700; }
+td form { display: inline; }
+.actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+.now-card { border: 2px solid var(--go); background: var(--go-bg); }
+.stat { font-size: 1.5rem; font-weight: 700; }
+.hero { padding: 2rem 0 1rem; }
+.hero h1 { font-size: 2.3rem; max-width: 20ch; }
+.hero .cta { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
+.plain-list { padding-left: 1.2rem; max-width: 56ch; }
+.plain-list li { margin-bottom: .4rem; }

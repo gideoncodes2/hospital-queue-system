@@ -1,0 +1,40 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Queue and appointments{% endblock %} | Hospital Queue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+  <link rel="stylesheet" href="{% static 'clinic/style.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="{% url 'home' %}">Hospital Queue</a>
+      <nav class="nav">
+        {% if user.is_authenticated %}
+          {% if user.is_staff %}
+            <a href="{% url 'dashboard' %}">Queue dashboard</a>
+            <a href="{% url 'admin:index' %}">Admin</a>
+          {% else %}
+            <a href="{% url 'book' %}">Book appointment</a>
+            <a href="{% url 'my_appointments' %}">My appointments</a>
+          {% endif %}
+          <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn quiet small" type="submit">Log out</button></form>
+        {% else %}
+          <a href="{% url 'login' %}">Log in</a>
+          <a class="btn small" href="{% url 'register' %}">Create account</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+  <main>
+    {% if messages %}
+      <ul class="messages">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

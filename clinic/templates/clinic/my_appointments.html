@@ -1,0 +1,66 @@
+{% extends "clinic/base.html" %}
+{% block title %}My appointments{% endblock %}
+{% block content %}
+<h1>My appointments</h1>
+
+{% for a in upcoming %}
+  <article class="ticket">
+    <div class="stub">
+      <span class="num">{{ a.ticket }}</span>
+      <span class="label">Queue number</span>
+    </div>
+    <div class="body">
+      <h3>Dr {{ a.doctor.name }}, {{ a.doctor.department }}</h3>
+      <div class="meta">
+        {% if a.is_walk_in %}Walk-in{% else %}{{ a.date|date:"D j M" }} at {{ a.slot_time|time:"H:i" }}{% endif %}
+      </div>
+      {% if a.status == "in_consultation" %}
+        <div class="wait now">You are with the doctor now</div>
+      {% elif a.live %}
+        {% if a.live.wait_minutes == 0 %}
+          <div class="wait now">You are next</div>
+        {% else %}
+          <div class="wait">About {{ a.live.wait_minutes }} min</div>
+        {% endif %}
+        <div class="meta">
+          Expected around {{ a.live.expected_start|time:"H:i" }}.
+          {{ a.live.ahead }} patient{{ a.live.ahead|pluralize }} ahead of you.
+          Doctors are averaging {{ a.live.avg_minutes|floatformat:0 }} min per patient.
+          This page refreshes on its own.
+        </div>
+      {% else %}
+        <div class="meta">The wait estimate appears here on the day of your appointment.</div>
+      {% endif %}
+      {% if a.status == "booked" or a.status == "checked_in" %}
+        <form method="post" action="{% url 'cancel' a.pk %}" onsubmit="return confirm('Cancel this appointment?')">
+          {% csrf_token %}
+          <button class="btn danger small" type="submit">Cancel appointment</button>
+        </form>
+      {% endif %}
+    </div>
+  </article>
+{% empty %}
+  <div class="card">
+    <p>You have no upcoming appointments.</p>
+    <a class="btn" href="{% url 'book' %}">Book an appointment</a>
+  </div>
+{% endfor %}
+
+{% if history %}
+  <h2 style="margin-top:2rem">Earlier</h2>
+  <div class="card table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Doctor</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for a in history %}
+          <tr><td>{{ a.date|date:"j M Y" }}</td><td>Dr {{ a.doctor.name }}</td><td>{{ a.get_status_display }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>setTimeout(function () { location.reload(); }, 30000);</script>
+{% endblock %}

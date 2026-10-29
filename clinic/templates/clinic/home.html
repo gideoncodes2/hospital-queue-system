@@ -1,0 +1,19 @@
+{% extends "clinic/base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Book your visit. Know how long you will wait.</h1>
+  <p>Choose a doctor and a time, get a queue number, and receive a text message when your turn is near, so you spend less of the day sitting in a crowded waiting room.</p>
+  <div class="hero cta" style="padding:0">
+    <a class="btn" href="{% url 'register' %}">Create an account</a>
+    <a class="btn quiet" href="{% url 'login' %}">Log in</a>
+  </div>
+</section>
+<section class="card" style="margin-top:2rem">
+  <h2>What happens after you book</h2>
+  <ul class="plain-list">
+    <li>You receive a text with your queue number.</li>
+    <li>On the day, the estimate on your appointment page updates as the doctor sees patients.</li>
+    <li>About half an hour before your turn, we text you. If the doctor runs late, we text you the new time.</li>
+  </ul>
+</section>
+{% endblock %}
